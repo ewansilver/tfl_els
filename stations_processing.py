@@ -41,5 +41,53 @@ def save_station_locations(locations, file):
 	location_data.close()
 
 
+# Find the further points North, East, South and  West
+def find_furthest_points(locations):
+	north = -360
+	south = 360
+	east = -360
+	west = 360
+	for location in locations:
+		longitude = location[1]
+		latitude = location[2]
+		if latitude > north:
+			north = latitude
+		if latitude < south:
+			south = latitude
+		if longitude > east:
+			east = longitude
+		if longitude < west:
+			west = longitude
+
+	return north, east, south, west
+
+def get_grid_point(latitude, longitude, north, south, east, west, maxX, maxY):
+	yLength = north - south
+	xLength = east - west
+
+	xPos = ((longitude - west) / xLength) * maxX
+	yPos = ((north - latitude)/ yLength) * maxY
+
+	return xPos, yPos
+
+
 locations = get_station_locations("./stations.kml")
 save_station_locations(locations, './stations.csv')
+north, east, south, west = find_furthest_points(locations)
+
+
+
+print('North:' + str(north))
+print('South:' + str(south))
+print('East:' + str(east))
+print('West:' + str(west))
+
+maxX = 1000
+maxY = 1000
+for location in locations:
+	longitude = location[1]
+	latitude = location[2]
+
+	x,y = get_grid_point(latitude, longitude, north, south, east, west, maxX, maxY)
+
+	print(str(x) + " "+ str(y))
